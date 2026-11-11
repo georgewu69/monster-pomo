@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1a2e">
+<title>专注小怪兽 🥚</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root { --bg:#1a1a2e; --card:#16213e; --accent:#ff6b6b; --text:#eee; --muted:#888; --green:#4ecdc4; --purple:#b794f6; --safe-b: env(safe-area-inset-bottom,0px); }
+html { -webkit-text-size-adjust:100%; }
+body { font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; padding-bottom:calc(20px + var(--safe-b)); }
+.top-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:12px 16px; padding-top:calc(12px + env(safe-area-inset-top,0px)); background:var(--card); position:sticky; top:0; z-index:100; }
+.top-bar h1 { font-size:1.1rem; }
+.nav-tabs { display:flex; gap:4px; flex:1; justify-content:flex-end; }
+.nav-tabs button { background:none; border:none; color:var(--muted); padding:8px 12px; border-radius:20px; cursor:pointer; font-size:.85rem; min-height:40px; transition:.2s; }
+.nav-tabs button.active { background:var(--accent); color:#fff; }
+.settings-btn { background:none; border:none; font-size:1.3rem; cursor:pointer; min-width:40px; min-height:40px; }
+.page { display:none; padding:16px; max-width:600px; margin:0 auto; }
+.page.active { display:block; }
+.nest-scene { position:relative; width:100%; aspect-ratio:1/1; max-height:340px; background:linear-gradient(180deg,#0f3460 0%,#16213e 60%,#1a1a2e 100%); border-radius:20px; overflow:hidden; margin-bottom:14px; transition:background .6s; }
+.nest-scene.b-nature { background:linear-gradient(180deg,#1b4332,#2d6a4f 60%,#1b4332); }
+.nest-scene.b-fire { background:linear-gradient(180deg,#5c1a1a,#8b2500 60%,#3d0c0c); }
+.nest-scene.b-star { background:linear-gradient(180deg,#0a0a2e,#1a1a4e 60%,#0d0d2b); }
+.nest-scene.b-sweet { background:linear-gradient(180deg,#4a1942,#6b2d5b 60%,#3d1235); }
+#stars { position:absolute; inset:0; }
+.star { position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; animation:twinkle 2s infinite alternate; }
+@keyframes twinkle { 0%{opacity:.3} 100%{opacity:1} }
+.bubble { position:absolute; top:14px; left:50%; transform:translateX(-50%); max-width:88%; background:#fff; color:#333; padding:8px 14px; border-radius:16px; font-size:.85rem; opacity:0; transition:opacity .3s; pointer-events:none; text-align:center; }
+.bubble.show { opacity:1; }
+.bubble::after { content:''; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); border-left:8px solid transparent; border-right:8px solid transparent; border-top:8px solid #fff; }
+.monster-container { position:absolute; bottom:14%; left:50%; transform:translateX(-50%); text-align:center; cursor:pointer; transition:transform .15s; }
+.monster-container:active { transform:translateX(-50%) scale(.92); }
+.monster-body { font-size:clamp(3.2rem,18vw,4rem); line-height:1; animation:float 3s ease-in-out infinite; filter:drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+.monster-mood { font-size:1.4rem; position:absolute; top:-8px; right:-6px; }
+.monster-name { font-size:.85rem; color:#ccc; margin-top:2px; }
+.furniture-item { position:absolute; font-size:1.7rem; animation:popIn .3s ease; pointer-events:none; }
+@keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+.status-bar { display:grid; grid-template-columns:repeat(4,1fr); background:var(--card); border-radius:16px; padding:14px 6px; margin-bottom:14px; }
+.status-item { text-align:center; }
+.status-item .val { font-size:1.25rem; font-weight:bold; color:var(--accent); }
+.status-item .lbl { font-size:.7rem; color:var(--muted); margin-top:2px; }
+.evolve-btn { width:100%; padding:14px; border:none; border-radius:12px; background:linear-gradient(135deg,var(--purple),var(--accent)); color:#fff; font-size:1rem; font-weight:bold; cursor:pointer; margin-bottom:16px; opacity:.45; min-height:48px; }
+.evolve-btn:not(:disabled) { opacity:1; animation:pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(183,148,246,.4)} 50%{box-shadow:0 0 18px 5px rgba(183,148,246,.25)} }
+.shop-section h3 { margin-bottom:10px; font-size:1rem; }
+.shop-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.shop-item { background:var(--card); border:2px solid transparent; border-radius:12px; padding:10px 4px; text-align:center; cursor:pointer; transition:.15s; font-size:.78rem; }
+.shop-item:active { border-color:var(--accent); }
+.shop-item.owned { border-color:var(--green); }
+.shop-item.placed { border-color:var(--green); background:rgba(78,205,196,.12); }
+.shop-item .emoji { font-size:1.7rem; display:block; margin-bottom:3px; }
+.shop-item .price { color:var(--accent); font-size:.72rem; }
+.mode-tabs { display:flex; justify-content:center; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+.mode-tabs button { background:var(--card); border:none; color:var(--muted); padding:10px 18px; border-radius:20px; cursor:pointer; transition:.2s; font-size:.9rem; min-height:44px; }
+.mode-tabs button.active { background:var(--accent); color:#fff; }
+.timer-ring { position:relative; width:min(260px,72vw); height:min(260px,72vw); margin:0 auto 22px; }
+.timer-ring svg { width:100%; height:100%; transform:rotate(-90deg); }
+.ring-bg { fill:none; stroke:var(--card); stroke-width:8; }
+.ring-progress { fill:none; stroke:var(--accent); stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 1s linear, stroke .4s; }
+.timer-display { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.time { font-size:clamp(2.2rem,12vw,3rem); font-weight:bold; font-variant-numeric:tabular-nums; }
+.label { color:var(--muted); font-size:.9rem; margin-top:4px; }
+.controls { display:flex; justify-content:center; align-items:center; gap:16px; margin-bottom:22px; }
+.controls button { width:56px; height:56px; border-radius:50%; border:none; background:var(--card); color:var(--text); font-size:1.3rem; cursor:pointer; transition:.15s; }
+.controls button:active { background:var(--accent); }
+.controls button.primary { width:72px; height:72px; font-size:1.6rem; background:var(--accent); }
+.sound-panel { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:12px; }
+.sound-btn { background:var(--card); border:2px solid transparent; color:var(--text); padding:9px 14px; border-radius:20px; cursor:pointer; font-size:.85rem; transition:.2s; min-height:42px; }
+.sound-btn.active { border-color:var(--green); background:rgba(78,205,196,.15); }
+.volume-control { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:22px; }
+.volume-control input[type=range] { width:min(160px,45vw); accent-color:var(--accent); height:36px; }
+.task-section { background:var(--card); border-radius:16px; padding:14px; }
+.task-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.task-header h3 { font-size:1rem; }
+.task-header span { color:var(--muted); font-size:.85rem; }
+.task-input-row { display:flex; gap:8px; margin-bottom:10px; }
+.task-input-row input { flex:1; padding:12px 14px; border:1px solid #333; border-radius:10px; background:var(--bg); color:var(--text); font-size:16px; }
+.task-input-row button { width:48px; border:none; border-radius:10px; background:var(--accent); color:#fff; font-size:1.3rem; cursor:pointer; }
+.task-list { list-style:none; max-height:220px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.task-list li { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #222; }
+.task-list li.done span { text-decoration:line-through; color:var(--muted); }
+.task-list input[type=checkbox] { width:22px; height:22px; accent-color:var(--green); cursor:pointer; flex-shrink:0; }
+.task-list span { flex:1; font-size:.95rem; }
+.task-list .del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1.2rem; padding:6px; }
+.task-list .del:active { color:var(--accent); }
+.evolve-page-title { text-align:center; font-size:1.4rem; margin-bottom:6px; }
+.evolve-page-sub { text-align:center; color:var(--muted); font-size:.9rem; margin-bottom:20px; }
+.current-form { text-align:center; padding:22px 16px; background:var(--card); border-radius:16px; margin-bottom:14px; }
+.current-form .emoji { font-size:4rem; }
+.current-form .name { font-size:1.1rem; margin-top:8px; font-weight:bold; }
+.current-form .desc { color:var(--muted); font-size:.85rem; margin-top:4px; }
+.progress-info { text-align:center; color:var(--muted); font-size:.9rem; margin-bottom:18px; }
+.progress-info span { color:var(--accent); font-weight:bold; }
+.branch-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.branch-card { background:var(--card); border:2px solid transparent; border-radius:16px; padding:14px; text-align:center; cursor:pointer; transition:.15s; }
+.branch-card:active { border-color:var(--purple); }
+.branch-card.locked { opacity:.5; cursor:not-allowed; }
+.branch-card .bemoji { font-size:2.4rem; }
+.branch-card .bname { font-weight:bold; margin-top:6px; }
+.branch-card .bdesc { font-size:.78rem; color:var(--muted); margin-top:4px; }
+.branch-card .bstages { display:flex; justify-content:center; gap:4px; margin-top:8px; font-size:1.2rem; }
+.branch-card .req { font-size:.75rem; color:gold; margin-top:6px; }
+.branch-card.chosen { border-color:var(--green); }
+.settings-panel,.evolve-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:200; align-items:center; justify-content:center; padding:20px; }
+.settings-panel.show,.evolve-modal.show { display:flex; }
+.evolve-modal { z-index:300; }
+.settings-box { background:var(--card); border-radius:16px; padding:22px; width:100%; max-width:360px; }
+.settings-box h3 { margin-bottom:14px; }
+.setting-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #222; }
+.setting-row label { font-size:.9rem; }
+.setting-row input[type=number] { width:64px; padding:8px; border:1px solid #333; border-radius:8px; background:var(--bg); color:var(--text); text-align:center; font-size:16px; }
+.save-btn { width:100%; padding:13px; margin-top:16px; border:none; border-radius:10px; background:var(--accent); color:#fff; font-size:1rem; cursor:pointer; }
+.evolve-modal-box { background:var(--card); border-radius:20px; padding:28px; text-align:center; max-width:320px; width:100%; animation:popIn .3s ease; }
+.evolve-modal-box .big-emoji { font-size:4rem; }
+.evolve-modal-box h3 { margin:12px 0 8px; }
+.evolve-modal-box p { color:var(--muted); font-size:.9rem; margin-bottom:18px; }
+.confirm-btn { padding:12px 30px; border:none; border-radius:10px; background:linear-gradient(135deg,var(--purple),var(--accent)); color:#fff; font-size:1rem; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <h1>🥚 专注小怪兽</h1>
+  <div class="nav-tabs">
+    <button class="active" data-page="nest" onclick="switchPage('nest')">🏠 小窝</button>
+    <button data-page="focus" onclick="switchPage('focus')">⏱ 专注</button>
+    <button data-page="evolve" onclick="switchPage('evolve')">✨ 进化</button>
+  </div>
+  <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+</div>
+<div id="page-nest" class="page active">
+  <div class="nest-scene" id="nestScene">
+    <div id="stars"></div>
+    <div class="bubble" id="bubble"></div>
+    <div class="monster-container" onclick="petMonster()">
+      <div class="monster-mood" id="moodEmoji">😊</div>
+      <div class="monster-body" id="monsterEmoji">🥚</div>
+      <div class="monster-name" id="monsterName">专注蛋</div>
+    </div>
+    <div id="furnitureLayer"></div>
+  </div>
+  <div class="status-bar">
+    <div class="status-item"><div class="val" id="totalPomos">0</div><div class="lbl">总番茄</div></div>
+    <div class="status-item"><div class="val" id="todayPomos">0</div><div class="lbl">今日</div></div>
+    <div class="status-item"><div class="val" id="monsterLevel">1</div><div class="lbl">等级</div></div>
+    <div class="status-item"><div class="val" id="coinCount">0</div><div class="lbl">金币</div></div>
+  </div>
+  <button class="evolve-btn" id="evolveBtn" onclick="switchPage('evolve')" disabled>🌱 继续专注，唤醒小怪兽</button>
+  <div class="shop-section">
+    <h3>🛒 装饰商店（1 番茄 = 1 金币）</h3>
+    <div class="shop-grid" id="shopGrid"></div>
+  </div>
+</div>
+<div id="page-focus" class="page">
+  <div class="mode-tabs">
+    <button class="active" data-mode="focus" onclick="setMode('focus')">🍅 专注</button>
+    <button data-mode="shortBreak" onclick="setMode('shortBreak')">☕ 短休</button>
+    <button data-mode="longBreak" onclick="setMode('longBreak')">🌙 长休</button>
+  </div>
+  <div class="timer-ring">
+    <svg viewBox="0 0 260 260">
+      <circle class="ring-bg" cx="130" cy="130" r="120"/>
+      <circle class="ring-progress" id="ringProgress" cx="130" cy="130" r="120" stroke-dasharray="753.98" stroke-dashoffset="0"/>
+    </svg>
+    <div class="timer-display">
+      <div class="time" id="timerDisplay">25:00</div>
+      <div class="label" id="timerLabel">准备专注</div>
+    </div>
+  </div>
+  <div class="controls">
+    <button onclick="resetTimer()" title="重置">⏹</button>
+    <button class="primary" id="startBtn" onclick="toggleTimer()">▶</button>
+    <button onclick="skipTimer()" title="跳过">⏭</button>
+  </div>
+  <div class="sound-panel" id="soundPanel"></div>
+  <div class="volume-control">
+    <label>🔉</label>
+    <input type="range" id="volumeSlider" min="0" max="100" value="30" oninput="changeVolume(this.value)">
+    <label id="volumeVal">30%</label>
+  </div>
+  <div class="task-section">
+    <div class="task-header"><h3>📋 任务清单</h3><span id="taskStats">0/0</span></div>
+    <div class="task-input-row">
+      <input type="text" id="taskInput" placeholder="添加新任务..." onkeydown="if(event.key==='Enter')addTask()">
+      <button onclick="addTask()">+</button>
+    </div>
+    <ul class="task-list" id="taskList"></ul>
+  </div>
+</div>
+<div id="page-evolve" class="page">
+  <div class="evolve-page-title">✨ 进化之路</div>
+  <div class="evolve-page-sub">积累番茄，选择你的小怪兽成长方向</div>
+  <div class="current-form">
+    <div class="emoji" id="evolveCurrentEmoji">🥚</div>
+    <div class="name" id="evolveCurrentName">专注蛋</div>
+    <div class="desc" id="evolveCurrentDesc">完成第一个番茄来孵化它！</div>
+  </div>
+  <div class="progress-info" id="progressInfo"></div>
+  <div class="branch-grid" id="branchGrid"></div>
+</div>
+<div class="settings-panel" id="settingsPanel" onclick="if(event.target===this)toggleSettings()">
+  <div class="settings-box">
+    <h3>⚙️ 设置</h3>
+    <div class="setting-row"><label>专注时长（分钟）</label><input type="number" id="setFocus" min="1" max="120" value="25"></div>
+    <div class="setting-row"><label>短休时长（分钟）</label><input type="number" id="setShort" min="1" max="30" value="5"></div>
+    <div class="setting-row"><label>长休时长（分钟）</label><input type="number" id="setLong" min="1" max="60" value="15"></div>
+    <div class="setting-row"><label>长休间隔（轮）</label><input type="number" id="setInterval" min="2" max="10" value="4"></div>
+    <button class="save-btn" onclick="saveSettings()">保存</button>
+  </div>
+</div>
+<div class="evolve-modal" id="evolveModal" onclick="if(event.target===this)closeEvolveModal()">
+  <div class="evolve-modal-box">
+    <div class="big-emoji" id="modalEmoji">🌱</div>
+    <h3 id="modalTitle">进化确认</h3>
+    <p id="modalDesc">确定吗？</p>
+    <button class="confirm-btn" onclick="confirmEvolve()">确认进化 ✨</button>
+  </div>
+</div>
+<script>
+const BRANCHES={
+  nature:{key:'nature',name:'自然系',emoji:'🌿',cls:'b-nature',stages:[{name:'嫩芽球',emoji:'🌱',desc:'一颗充满生机的小芽'},{name:'叶耳兽',emoji:'🍃',desc:'长出叶子耳朵的萌兽'},{name:'森林守护者',emoji:'🌳',desc:'守护整片森林的温柔巨人'}]},
+  fire:{key:'fire',name:'火焰系',emoji:'🔥',cls:'b-fire',stages:[{name:'小火苗',emoji:'🔥',desc:'一簇温暖的小火苗'},{name:'火狐宝宝',emoji:'🦊',desc:'尾巴燃着火焰的小狐狸'},{name:'炎龙幼崽',emoji:'🐉',desc:'喷火还不熟练的小龙'}]},
+  star:{key:'star',name:'星空系',emoji:'✨',cls:'b-star',stages:[{name:'星尘团',emoji:'🌟',desc:'漂浮的星尘集合体'},{name:'月兔',emoji:'🐰',desc:'来自月亮的小兔子'},{name:'银河鲸',emoji:'🐋',desc:'遨游银河的梦幻鲸鱼'}]},
+  sweet:{key:'sweet',name:'甜系',emoji:'🍬',cls:'b-sweet',stages:[{name:'棉花糖',emoji:'🍡',desc:'软乎乎甜滋滋的小团子'},{name:'布丁怪',emoji:'🍮',desc:'Q弹的布丁小怪兽'},{name:'糖果精灵',emoji:'🧁',desc:'浑身散发甜香的精灵'}]}
+};
+const NEED=[1,5,15,30];
+const FURNITURE=[{id:'lamp',emoji:'🪔',name:'小夜灯',price:3},{id:'plant',emoji:'🪴',name:'盆栽',price:3},{id:'book',emoji:'📚',name:'书架',price:5},{id:'bed',emoji:'🛏️',name:'小床',price:8},{id:'star',emoji:'⭐',name:'星星挂饰',price:4},{id:'music',emoji:'🎵',name:'音乐盒',price:6},{id:'cake',emoji:'🎂',name:'蛋糕',price:5},{id:'crystal',emoji:'🔮',name:'水晶球',price:10}];
+const FPOS=[{top:'62%',left:'8%'},{top:'66%',left:'78%'},{top:'28%',left:'8%'},{top:'28%',left:'78%'},{top:'74%',left:'44%'},{top:'18%',left:'45%'},{top:'50%',left:'22%'},{top:'50%',left:'66%'}];
+const SOUNDS=[{id:'rain',name:'🌧 雨声',freq:300,type:'brown'},{id:'forest',name:'🌲 森林',freq:600,type:'pink'},{id:'cafe',name:'☕ 咖啡馆',freq:450,type:'brown'},{id:'wave',name:'🌊 海浪',freq:160,type:'brown'},{id:'fire',name:'🔥 篝火',freq:110,type:'brown'}];
+const MOODS=['😊','😄','🥰','😎','🤗','😋','🥳','😌'];
+const MSGS=['今天也要加油哦！','陪我一起专注吧～','你认真的样子好帅！','休息一下别太累啦','我们一起变强！','摸摸头～','好开心你回来！','专注力 +1 +1 +1','再坚持一下就赢啦！'];
+let state={totalPomos:0,todayPomos:0,lastDate:todayStr(),coins:0,level:1,branch:null,stage:-1,owned:[],placed:{},tasks:[],settings:{focus:25,shortBreak:5,longBreak:15,longBreakInterval:4}};
+let timer={mode:'focus',running:false,remaining:0,total:0,interval:null,doneSession:0};
+let audioCtx=null,gainNode=null,soundNodes=[],activeSound=null,pendingBranch=null,pendingStage=null;
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function loadState(){try{const s=JSON.parse(localStorage.getItem('monsterPomo'));if(s){state=Object.assign(state,s);state.settings=Object.assign({focus:25,shortBreak:5,longBreak:15,longBreakInterval:4},s.settings||{});if(state.lastDate!==todayStr()){state.todayPomos=0;state.lastDate=todayStr();}}}catch(e){}}
+function saveState(){localStorage.setItem('monsterPomo',JSON.stringify(state));}
+function switchPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');document.querySelectorAll('.nav-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='evolve')renderEvolvePage();if(p==='nest')updateNest();}
+function toggleSettings(){const el=document.getElementById('settingsPanel');document.getElementById('setFocus').value=state.settings.focus;document.getElementById('setShort').value=state.settings.shortBreak;document.getElementById('setLong').value=state.settings.longBreak;document.getElementById('setInterval').value=state.settings.longBreakInterval;el.classList.toggle('show');}
+function saveSettings(){state.settings.focus=clampInt('setFocus',25,1,120);state.settings.shortBreak=clampInt('setShort',5,1,30);state.settings.longBreak=clampInt('setLong',15,1,60);state.settings.longBreakInterval=clampInt('setInterval',4,2,10);saveState();if(!timer.running)setMode(timer.mode);document.getElementById('settingsPanel').classList.remove('show');}
+function clampInt(id,def,min,max){let v=parseInt(document.getElementById(id).value);if(isNaN(v))v=def;return Math.max(min,Math.min(max,v));}
+function getDuration(m){const s=state.settings;return({focus:s.focus,shortBreak:s.shortBreak,longBreak:s.longBreak})[m]*60;}
+function modeLabel(m){return{focus:'准备专注',shortBreak:'短休息',longBreak:'长休息'}[m];}
+function modeEmoji(m){return{focus:'🍅',shortBreak:'☕',longBreak:'🌙'}[m];}
+function setMode(mode){if(timer.running)return;timer.mode=mode;timer.total=getDuration(mode);timer.remaining=timer.total;document.querySelectorAll('.mode-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));updateTimerDisplay();document.getElementById('timerLabel').textContent=modeLabel(mode);updateRingColor();}
+function toggleTimer(){timer.running?pauseTimer():startTimer();}
+function startTimer(){if(!audioCtx)initAudio();if(audioCtx.state==='suspended')audioCtx.resume();timer.running=true;document.getElementById('startBtn').textContent='⏸';document.getElementById('timerLabel').textContent=modeEmoji(timer.mode)+' 进行中...';if(timer.remaining<=0){timer.total=getDuration(timer.mode);timer.remaining=timer.total;}timer.interval=setInterval(()=>{timer.remaining--;updateTimerDisplay();if(timer.remaining<=0){clearInterval(timer.interval);timer.running=false;onTimerComplete();}},1000);if(activeSound&&gainNode)gainNode.gain.setTargetAtTime(vol()/100,audioCtx.currentTime,.1);}
+function pauseTimer(){timer.running=false;clearInterval(timer.interval);document.getElementById('startBtn').textContent='▶';document.getElementById('timerLabel').textContent='已暂停';if(gainNode&&activeSound)gainNode.gain.setTargetAtTime(0,audioCtx.currentTime,.1);}
+function resetTimer(){pauseTimer();timer.total=getDuration(timer.mode);timer.remaining=timer.total;updateTimerDisplay();document.getElementById('timerLabel').textContent=modeLabel(timer.mode);}
+function skipTimer(){clearInterval(timer.interval);timer.running=false;document.getElementById('startBtn').textContent='▶';onTimerComplete();}
+function updateTimerDisplay(){const m=Math.floor(timer.remaining/60),s=timer.remaining%60;document.getElementById('timerDisplay').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');const prog=timer.total>0?1-timer.remaining/timer.total:0;document.getElementById('ringProgress').style.strokeDashoffset=753.98*(1-prog);document.title=(timer.running?(m+':'+String(s).padStart(2,'0')+' · '):'')+'专注小怪兽 🥚';}
+function updateRingColor(){document.getElementById('ringProgress').style.stroke=({focus:'#ff6b6b',shortBreak:'#4ecdc4',longBreak:'#b794f6'})[timer.mode]||'#ff6b6b';}
+function onTimerComplete(){playBeep();if(timer.mode==='focus'){state.totalPomos++;state.todayPomos++;state.coins++;timer.doneSession++;const lv=Math.floor(state.totalPomos/5)+1;if(lv>state.level)state.level=lv;if(state.totalPomos===1&&state.stage===-1){state.stage=0;state.branch=null;showBubble('哇！我孵化啦！🐣');}else showBubble('太棒了！又完成一个番茄！🎉');saveState();updateAll();if(timer.doneSession%state.settings.longBreakInterval===0)setMode('longBreak');else setMode('shortBreak');}else{setMode('focus');showBubble('休息结束，继续加油！💪');}}
+function initAudio(){audioCtx=new(window.AudioContext||window.webkitAudioContext)();gainNode=audioCtx.createGain();gainNode.gain.value=0;gainNode.connect(audioCtx.destination);}
+function vol(){return parseFloat(document.getElementById('volumeSlider').value);}
+function renderSoundPanel(){document.getElementById('soundPanel').innerHTML=SOUNDS.map(s=>`<button class="sound-btn" data-sound="${s.id}" onclick="toggleSound('${s.id}')">${s.name}</button>`).join('');}
+function toggleSound(id){if(!audioCtx)initAudio();if(audioCtx.state==='suspended')audioCtx.resume();const btn=document.querySelector('[data-sound="'+id+'"]');if(activeSound===id){stopSound();document.querySelectorAll('.sound-btn').forEach(b=>b.classList.remove('active'));activeSound=null;return;}document.querySelectorAll('.sound-btn').forEach(b=>b.classList.remove('active'));stopSound();const info=SOUNDS.find(s=>s.id===id);const fs=info.type==='brown'?[80,info.freq,info.freq*2.5]:[info.freq*0.5,info.freq,info.freq*1.5];soundNodes=fs.map(f=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=f;const lfo=audioCtx.createOscillator(),lg=audioCtx.createGain();lfo.frequency.value=.05+Math.random()*.15;lg.gain.value=f*.08;lfo.connect(lg);lg.connect(o.frequency);lfo.start();g.gain.value=.08/fs.length;o.connect(g);g.connect(gainNode);o.start();return{o,g,lfo};});gainNode.gain.setTargetAtTime(vol()/100,audioCtx.currentTime,.4);activeSound=id;if(btn)btn.classList.add('active');}
+function stopSound(){soundNodes.forEach(n=>{try{n.o.stop();n.lfo.stop();}catch(e){}});soundNodes=[];if(gainNode)gainNode.gain.setTargetAtTime(0,audioCtx.currentTime,.1);}
+function changeVolume(v){document.getElementById('volumeVal').textContent=v+'%';if(gainNode&&activeSound)gainNode.gain.setTargetAtTime(parseFloat(v)/100,audioCtx.currentTime,.1);}
+function playBeep(){if(!audioCtx)initAudio();[0,.3,.6].forEach(d=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=800;g.gain.setValueAtTime(.25,audioCtx.currentTime+d);g.gain.exponentialRampToValueAtTime(.01,audioCtx.currentTime+d+.25);o.start(audioCtx.currentTime+d);o.stop(audioCtx.currentTime+d+.25);});}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function renderTasks(){const done=state.tasks.filter(t=>t.done).length;document.getElementById('taskStats').textContent=done+'/'+state.tasks.length;document.getElementById('taskList').innerHTML=state.tasks.map(t=>`<li class="${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id})"><span>${esc(t.text)}</span><button class="del" onclick="delTask(${t.id})">✕</button></li>`).join('');}
+function addTask(){const i=document.getElementById('taskInput'),v=i.value.trim();if(!v)return;state.tasks.push({id:Date.now(),text:v,done:false});i.value='';saveState();renderTasks();}
+function toggleTask(id){const t=state.tasks.find(t=>t.id===id);if(t)t.done=!t.done;saveState();renderTasks();}
+function delTask(id){state.tasks=state.tasks.filter(t=>t.id!==id);saveState();renderTasks();}
+function petMonster(){document.getElementById('moodEmoji').textContent=MOODS[Math.floor(Math.random()*MOODS.length)];showBubble(MSGS[Math.floor(Math.random()*MSGS.length)]);}
+function showBubble(m){const b=document.getElementById('bubble');b.textContent=m;b.classList.add('show');clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('show'),2600);}
+function currentForm(){if(state.stage===-1)return{emoji:'🥚',name:'专注蛋',desc:'完成第一个番茄来孵化它！',cls:''};if(state.branch===null)return{emoji:'🐣',name:'初生毛球',desc:'选一条进化路线吧！',cls:''};return Object.assign({},BRANCHES[state.branch].stages[state.stage],{cls:BRANCHES[state.branch].cls});}
+function canEvolve(){if(state.branch===null&&state.totalPomos>=NEED[1])return true;if(state.branch!==null&&state.stage<2&&state.totalPomos>=NEED[state.stage+2])return true;return false;}
+function nextNeed(){if(state.branch===null)return NEED[1];if(state.stage<2)return NEED[state.stage+2];return state.totalPomos;}
+function updateNest(){const f=currentForm();document.getElementById('monsterEmoji').textContent=f.emoji;document.getElementById('monsterName').textContent=f.name;document.getElementById('nestScene').className='nest-scene '+(f.cls||'');document.getElementById('furnitureLayer').innerHTML=Object.keys(state.placed).filter(k=>state.placed[k]).map((id,i)=>{const fu=FURNITURE.find(x=>x.id===id);if(!fu)return'';const p=FPOS[i%FPOS.length];return`<div class="furniture-item" style="top:${p.top};left:${p.left}">${fu.emoji}</div>`;}).join('');const btn=document.getElementById('evolveBtn');if(state.totalPomos===0){btn.disabled=true;btn.textContent='🌱 继续专注，唤醒小怪兽';}else if(canEvolve()){btn.disabled=false;btn.textContent='✨ 可以进化了，点我！';}else{btn.disabled=true;btn.textContent='当前阶段 · 还需 '+Math.max(0,nextNeed()-state.totalPomos)+' 个番茄';}}
+function renderShop(){document.getElementById('shopGrid').innerHTML=FURNITURE.map(f=>{const owned=state.owned.includes(f.id),placed=state.placed[f.id];return`<div class="shop-item ${owned?'owned':''} ${placed?'placed':''}" onclick="shopClick('${f.id}')"><span class="emoji">${f.emoji}</span>${f.name}<br><span class="price">${owned?(placed?'已摆放':'点击摆放'):'🪙'+f.price}</span></div>`;}).join('');}
+function shopClick(id){const f=FURNITURE.find(x=>x.id===id);if(state.owned.includes(id)){state.placed[id]=!state.placed[id];}else{if(state.coins<f.price){showBubble('金币不够啦，再专注一会儿～');return;}state.coins-=f.price;state.owned.push(id);state.placed[id]=true;showBubble('买下啦！放进小窝了～');}saveState();renderShop();updateNest();}
+function createStars(){let h='';for(let i=0;i<30;i++){h+=`<div class="star" style="top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*2}s"></div>`;}document.getElementById('stars').innerHTML=h;}
+function renderEvolvePage(){const f=currentForm();document.getElementById('evolveCurrentEmoji').textContent=f.emoji;document.getElementById('evolveCurrentName').textContent=f.name;document.getElementById('evolveCurrentDesc').textContent=f.desc;let info='';if(state.branch===null){info='当前阶段需要 <span>'+NEED[1]+'</span> 个番茄 · 已有 <span>'+state.totalPomos+'</span> 个（完成 1 个先孵化哦）';}else if(state.stage<2){info='下一阶段需要 <span>'+NEED[state.stage+2]+'</span> 个番茄 · 已有 <span>'+state.totalPomos+'</span> 个';}else{info='已达最终形态，太强啦！🎉';}document.getElementById('progressInfo').innerHTML=info;const grid=document.getElementById('branchGrid');if(state.branch===null){grid.innerHTML=Object.values(BRANCHES).map(b=>{const lock=state.totalPomos<NEED[1];return`<div class="branch-card ${lock?'locked':''}" onclick="${lock?'':'pickBranch(\\''+b.key+'\\')'}"><div class="bemoji">${b.emoji}</div><div class="bname">${b.name}</div><div class="bdesc">${b.stages[0].desc}</div><div class="bstages">${b.stages.map(s=>s.emoji).join('')}</div><div class="req">${lock?'🔒 需 '+NEED[1]+' 番茄':'点击选择'}</div></div>`;}).join('');}else{const b=BRANCHES[state.branch];const nxt=state.stage<2?b.stages[state.stage+1]:null;grid.innerHTML=`<div class="branch-card chosen" onclick="tryUpgrade()"><div class="bemoji">${b.emoji}</div><div class="bname">${b.name}</div><div class="bdesc">${b.stages[state.stage].name} → ${nxt?nxt.name:'MAX'}</div><div class="bstages">${b.stages.map(s=>s.emoji).join('')}</div><div class="req">${nxt?(state.totalPomos>=NEED[state.stage+2]?'点击进化 ✨':'🔒 需 '+NEED[state.stage+2]+' 番茄'):'已达满级'}</div></div><div class="branch-card" onclick="resetBranch()"><div class="bemoji">🔄</div><div class="bname">换路线</div><div class="bdesc">重新选择进化方向</div></div>`;}}
+function pickBranch(key){pendingBranch=key;pendingStage=null;const b=BRANCHES[key];openModal(b.stages[0].emoji,'选择 '+b.name+' 路线','踏上 '+b.name+' 的进化之旅？');}
+function resetBranch(){if(confirm('确定换进化路线吗？形态会重选，番茄数保留。')){state.branch=null;state.stage=0;saveState();renderEvolvePage();}}
+function tryUpgrade(){if(state.branch===null||state.stage>=2)return;const b=BRANCHES[state.branch];pendingBranch=state.branch;pendingStage=state.stage+1;if(state.totalPomos<NEED[pendingStage]){showBubble('番茄还不够哦');return;}openModal(b.stages[pendingStage].emoji,'进化为 '+b.stages[pendingStage].name,b.stages[pendingStage].desc);}
+function openModal(emoji,title,desc){document.getElementById('modalEmoji').textContent=emoji;document.getElementById('modalTitle').textContent=title;document.getElementById('modalDesc').textContent=desc;document.getElementById('evolveModal').classList.add('show');}
+function closeEvolveModal(){document.getElementById('evolveModal').classList.remove('show');}
+function confirmEvolve(){if(pendingStage===null){state.branch=pendingBranch;state.stage=0;}else{if(state.totalPomos<NEED[pendingStage]){showBubble('番茄还不够哦');closeEvolveModal();return;}state.stage=pendingStage;}saveState();closeEvolveModal();renderEvolvePage();updateAll();const c=currentForm();showBubble('我进化成 '+c.name+' 啦！✨');}
+function updateAll(){document.getElementById('totalPomos').textContent=state.totalPomos;document.getElementById('todayPomos').textContent=state.todayPomos;document.getElementById('monsterLevel').textContent=state.level;document.getElementById('coinCount').textContent=state.coins;updateNest();renderShop();renderTasks();if(document.getElementById('page-evolve').classList.contains('active'))renderEvolvePage();}
+function init(){loadState();renderSoundPanel();renderShop();renderTasks();createStars();setMode('focus');updateAll();}
+init();
+</script>
+</body>
+</html>
